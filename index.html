@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Builder with Preview</title>
+    <!-- <link rel="stylesheet" href="styles.css"> -->
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+            margin: 0;
+        }
+    
+        #addQuestionBtn, #finishFormBtn, #previewFormBtn {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+        }
+    
+        #finishFormBtn {
+            background-color: #34a853;
+        }
+    
+        #previewFormBtn {
+            background-color: #fbbc05;
+        }
+    
+        #addQuestionBtn:hover, #finishFormBtn:hover, #previewFormBtn:hover {
+            background-color: #357ae8;
+        }
+    
+        #finishFormBtn:hover {
+            background-color: #2b8e44;
+        }
+    
+        #previewFormBtn:hover {
+            background-color: #e0a800;
+        }
+    
+        #formFields {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(60, 64, 67, 0.3), 0 4px 8px rgba(60, 64, 67, 0.15);
+            margin-bottom: 20px;
+        }
+    
+        .question-container {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            background-color: #ffffff;
+            position: relative;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+    
+        .question-container .delete-question {
+            background-color: #d93025;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            transition: background-color 0.3s ease;
+        }
+    
+        .question-container .delete-question:hover {
+            background-color: #c5221f;
+        }
+    
+        input[type="text"], input[type="date"], select {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 16px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            box-shadow: inset 0 1px 2px rgba(60, 64, 67, 0.15);
+            transition: border-color 0.3s ease;
+        }
+    
+        input[type="text"]:focus, input[type="date"]:focus, select:focus {
+            border-color: #4285f4;
+            outline: none;
+            box-shadow: 0 1px 3px rgba(60, 64, 67, 0.3), 0 4px 8px rgba(60, 64, 67, 0.15);
+        }
+    
+        button {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            background-color: #17a2b8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+        }
+    
+        button:hover {
+            background-color: #138496;
+        }
+    
+        label {
+            margin-left: 10px;
+            font-size: 16px;
+            color: #202124;
+        }
+    
+        #submitBtn {
+            display: none;
+            margin-top: 20px;
+            background-color: #4285f4;
+        }
+    
+        .option {
+            display: flex;
+            align-items: center;
+            margin-top: 5px;
+        }
+    
+        .option label {
+            flex: 1;
+            margin: 0 10px;
+            cursor: pointer;
+        }
+    
+        .option .delete-option {
+            background-color: #d93025;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+    
+        .option .delete-option:hover {
+            background-color: #c5221f;
+        }
+    
+        .content-editable {
+            border: 1px dashed #dadce0;
+            padding: 5px;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+    </style>
+    
+</head>
+<body>
+    <button id="addQuestionBtn">Add Question</button>
+    <button id="finishFormBtn">Finish Form</button>
+    <button id="previewFormBtn" style="display: none;">Preview Form</button>
+    <h2 id="formTitle"></h2>
+    <div id="formFields"></div>
+    <div id="responseContainer" style="display: none;">
+        <h2>Form Responses</h2>
+        <div id="responses"></div>
+    </div>
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const formTitle = sessionStorage.getItem('formTitle');
+            if (formTitle) {
+                document.getElementById('formTitle').innerText = formTitle;
+            }
+
+        });
+
+        document.getElementById('addQuestionBtn').addEventListener('click', function() {
+            const formFieldsContainer = document.getElementById('formFields');
+
+            // Create question container
+            const questionContainer = document.createElement('div');
+            questionContainer.classList.add('question-container');
+
+            // Create question input
+            const questionInput = document.createElement('input');
+            questionInput.setAttribute('type', 'text');
+            questionInput.setAttribute('placeholder', 'Enter your question here');
+            questionContainer.appendChild(questionInput);
+
+            // Create delete question button
+            const deleteQuestionBtn = document.createElement('button');
+            deleteQuestionBtn.textContent = 'Delete';
+            deleteQuestionBtn.classList.add('delete-question');
+            deleteQuestionBtn.addEventListener('click', function() {
+                questionContainer.remove();
+            });
+            questionContainer.appendChild(deleteQuestionBtn);
+
+            // Create field type select dropdown
+            const fieldTypeSelect = document.createElement('select');
+            fieldTypeSelect.setAttribute('name', 'fieldType');
+
+            const options = [
+                { value: '', text: 'Select Type of Field' },
+                { value: 'Text_Box', text: 'Text Box' },
+                { value: 'Radio_Button', text: 'Radio Button' },
+                { value: 'Check_Box', text: 'Check Box' },
+                { value: 'Drop_Down', text: 'Drop Down' },
+                { value: 'date', text: 'Date' },
+                { value: 'File', text: 'File' }
+            ];
+
+            options.forEach(optionData => {
+                const option = document.createElement('option');
+                option.setAttribute('value', optionData.value);
+                option.textContent = optionData.text;
+                fieldTypeSelect.appendChild(option);
+            });
+
+            questionContainer.appendChild(fieldTypeSelect);
+            formFieldsContainer.appendChild(questionContainer);
+
+            // Event listener for field type selection
+            fieldTypeSelect.addEventListener('change', function() {
+                const selectedType = this.value;
+                let fieldContainer = questionContainer.querySelector('.field-container');
+
+                if (fieldContainer) {
+                    fieldContainer.remove();
+                }
+
+                fieldContainer = document.createElement('div');
+                fieldContainer.classList.add('field-container');
+
+                if (selectedType === 'Text_Box') {
+                    const textBox = document.createElement('input');
+                    textBox.setAttribute('type', 'text');
+                    textBox.setAttribute('placeholder', 'Text Box');
+                    fieldContainer.appendChild(textBox);
+                } else if (selectedType === 'Radio_Button') {
+                    createOptionGroup(fieldContainer, 'radio', 'Add Radio Button', questionInput.value);
+                } else if (selectedType === 'Check_Box') {
+                    createOptionGroup(fieldContainer, 'checkbox', 'Add Check Box', questionInput.value);
+                } else if (selectedType === 'Drop_Down') {
+                    createDropDown(fieldContainer);
+                } else if (selectedType === 'date') {
+                    const dateField = document.createElement('input');
+                    dateField.setAttribute('type', 'date');
+                    fieldContainer.appendChild(dateField);
+                } else if (selectedType === 'File') {
+                    const fileField = document.createElement('input');
+                    fileField.setAttribute('type', 'file');
+                    fieldContainer.appendChild(fileField);
+                }
+
+                questionContainer.appendChild(fieldContainer);
+            });
+
+            document.getElementById('previewFormBtn').style.display = 'inline-block';
+        });
+
+        function createOptionGroup(container, type, addButtonText, groupName) {
+            const optionGroup = document.createElement('div');
+            optionGroup.classList.add($`{type}Group`);
+
+            addOption(optionGroup, type, 'Option 1', groupName);
+            addOption(optionGroup, type, 'Option 2', groupName);
+
+            const addOptionBtn = document.createElement('button');
+            addOptionBtn.classList.add('addFieldBtn');
+            addOptionBtn.textContent = addButtonText;
+            addOptionBtn.addEventListener('click', function() {
+                addOption(optionGroup, type, 'New Option', groupName);
+            });
+
+            container.appendChild(optionGroup);
+            container.appendChild(addOptionBtn);
+        }
+
+        function addOption(container, type, labelText, groupName) {
+            const option = document.createElement('div');
+            option.classList.add('option');
+            const input = document.createElement('input');
+            input.setAttribute('type', type);
+
+            if (type === 'radio') {
+                input.setAttribute('name', groupName);
+            }
+
+            const label = document.createElement('label');
+            label.contentEditable = true;
+            label.textContent = labelText;
+            label.classList.add('content-editable');
+            label.addEventListener('input', function() {
+                input.setAttribute('value', label.textContent);
+            });
+
+            const deleteOptionBtn = document.createElement('button');
+            deleteOptionBtn.textContent = 'Delete';
+            deleteOptionBtn.classList.add('delete-option');
+            deleteOptionBtn.addEventListener('click', function() {
+                option.remove();
+            });
+
+            option.appendChild(input);
+            option.appendChild(label);
+            option.appendChild(deleteOptionBtn);
+            container.appendChild(option);
+        }
+
+        function createDropDown(container) {
+            const dropDownGroup = document.createElement('div');
+            dropDownGroup.classList.add('dropDownGroup');
+
+            const dropDown = document.createElement('select');
+            dropDownGroup.appendChild(dropDown);
+
+            const addOptionBtn = document.createElement('button');
+            addOptionBtn.classList.add('addFieldBtn');
+            addOptionBtn.textContent = 'Add Drop Down Option';
+            addOptionBtn.addEventListener('click', function() {
+                const optionContainer = document.createElement('div');
+                const newOption = document.createElement('option');
+                newOption.textContent = `Option ${dropDown.options.length + 1}`;
+                dropDown.appendChild(newOption);
+
+                const label = document.createElement('label');
+                label.contentEditable = true;
+                label.textContent = `Option ${dropDown.options.length}`;
+                label.classList.add('content-editable');
+                label.addEventListener('input', function() {
+                    newOption.textContent = label.textContent;
+                });
+
+                const deleteOptionBtn = document.createElement('button');
+                deleteOptionBtn.textContent = 'Delete';
+                deleteOptionBtn.classList.add('delete-option');
+                deleteOptionBtn.addEventListener('click', function() {
+                    optionContainer.remove();
+                    newOption.remove();
+                });
+
+                optionContainer.appendChild(label);
+                optionContainer.appendChild(deleteOptionBtn);
+                dropDownGroup.appendChild(optionContainer);
+            });
+
+            container.appendChild(dropDownGroup);
+            container.appendChild(addOptionBtn);
+        }
+
+        document.getElementById('finishFormBtn').addEventListener('click', function() {
+            const formFieldsContainer = document.getElementById('formFields');
+            const questionContainers = formFieldsContainer.getElementsByClassName('question-container');
+
+            if (questionContainers.length === 0) {
+                alert('Please add at least one question before finishing the form.');
+                return;
+            }
+
+            const finishConfirmation = confirm('Are you sure you want to finish the form? You won\'t be able to add more questions.');
+            if (finishConfirmation) {
+                document.getElementById('addQuestionBtn').style.display = 'none';
+                document.getElementById('finishFormBtn').style.display = 'none';
+                document.getElementById('previewFormBtn').style.display = 'inline-block';
+            }
+        });
+
+        document.getElementById('previewFormBtn').addEventListener('click', function() {
+            const formFieldsContainer = document.getElementById('formFields');
+            const questionContainers = formFieldsContainer.getElementsByClassName('question-container');
+
+            const previewData = Array.from(questionContainers).map(container => {
+                const questionText = container.querySelector('input[type="text"]').value;
+                const fieldType = container.querySelector('select').value;
+                const fieldContainer = container.querySelector('.field-container');
+                let options = [];
+
+                if (fieldType === 'Radio_Button' || fieldType === 'Check_Box') {
+                    options = Array.from(fieldContainer.querySelectorAll('.option label')).map(label => label.textContent);
+                } else if (fieldType === 'Drop_Down') {
+                    options = Array.from(fieldContainer.querySelectorAll('option')).map(option => option.textContent);
+                }
+
+                return { questionText, fieldType, options };
+            });
+
+            sessionStorage.setItem('previewData', JSON.stringify(previewData));
+            window.open('preview.html', '_blank');
+        });
+    </script>
+</body>
+</html>

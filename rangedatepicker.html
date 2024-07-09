@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Particuler raneg datepicker in jquery</title>
+<link href="https://code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css" rel="stylesheet"/>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<table>
+    <tbody>
+      <tr>
+       <td><h1>Select your time Period</h1></td>
+      </tr>
+      <tr>
+        <td>
+          <div class='picker'>
+            <label for="fromperiod">From</label>
+            <input type="text" id="fromperiod" name="from">
+            <label for="toperiod">to</label>
+            <input type="text" id="toperiod" name="to">
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</head>
+<body>
+<h1></h1>
+<script type="text/javascript">
+   $(function() {
+  $("#fromperiod").datepicker({
+    defaultDate: "+1w",
+    changeMonth: true,
+    numberOfMonths: 1,
+    onClose: function(selectedDate) {
+      $("#toperiod").datepicker("option", "minDate", selectedDate);
+    }
+  });
+  $("#toperiod").datepicker({
+    defaultDate: "+1w",
+    changeMonth: true,
+    numberOfMonths: 1,
+    onClose: function(selectedDate) {
+      $("#fromperiod").datepicker("option", "maxDate", selectedDate);
+    }
+  });
+});
+    </script>
+</body>
+</html> 

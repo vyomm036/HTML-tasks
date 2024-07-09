@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Birthday datepicker in jquery</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.8.24/themes/base/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.8.2.js"></script>
+<script src="//code.jquery.com/ui/1.8.24/jquery-ui.js"></script>
+</head>
+<body>
+<h1>Your birthday datepicker in jquery</h1>
+Date <input type="text" name="datepicker" id="datepicker" placeholder="Date">
+<script type="text/javascript">
+    $("#datepicker").live('click',function() {
+         $(this).datepicker({
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true,
+            maxDate: 0,
+            }).datepicker( "show" );
+        });
+    </script>
+</body>
+</html>

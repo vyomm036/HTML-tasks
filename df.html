@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        function selectDataTypes() {
+  var form = FormApp.getActiveForm();
+  var items = form.getItems();
+  
+  // Select specific data types
+  var selectedItems = [];
+  for (var i = 0; i < items.length; i++) {
+    var item = items[i];
+    switch (item.getType()) {
+      case FormApp.ItemType.CHECKBOX:
+      case FormApp.ItemType.LIST:
+      case FormApp.ItemType.MULTIPLE_CHOICE:
+      case FormApp.ItemType.PARAGRAPH_TEXT:
+      case FormApp.ItemType.SCALE:
+        selectedItems.push(item);
+        break;
+    }
+  }
+  
+  // Do something with the selected items
+  console.log(selectedItems);
+}
+    </script>
+    <script>
+        function selectDataTypes() {
+  var form = FormApp.getActiveForm();
+  var items = form.getItems();
+  
+  // Select all data types except for SHORT_ANSWER
+  var selectedItems = [];
+  for (var i = 0; i < items.length; i++) {
+    var item = items[i];
+    if (item.getType()!= FormApp.ItemType.SHORT_ANSWER) {
+      selectedItems.push(item);
+    }
+  }
+  
+  // Do something with the selected items
+  console.log(selectedItems);
+}
+    </script>
+</body>
+</html>
